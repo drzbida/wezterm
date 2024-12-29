@@ -941,7 +941,7 @@ M.str.format_tab_title = function(pane, title, config, max_width)
     title = Icon.Progs[process] .. " " .. (other or "")
   end
 
-  local proc = get_process_osc1337()
+  local proc = get_process_osc1337(pane)
     or pane.foreground_process_name
     or pane:get_foreground_process_name()
     or ""

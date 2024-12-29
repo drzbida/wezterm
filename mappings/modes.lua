@@ -137,19 +137,14 @@ local key_tables = {
     { "<M-l>", act.ActivatePaneDirection "Right", "move right" },
 
     ---key tables
-    { "<leader>h", act.ActivateKeyTable { name = "help_mode", one_shot = true }, "help" },
+    { "<M-S-?>", act.ActivateKeyTable { name = "help_mode", one_shot = true }, "help" },
     {
-      "<leader>w",
+      "<M-w>",
       act.ActivateKeyTable { name = "window_mode", one_shot = false },
       "window mode",
     },
-    {
-      "<leader>f",
-      act.ActivateKeyTable { name = "font_mode", one_shot = false },
-      "font mode",
-    },
-    { "<leader>c", act.ActivateCopyMode, "copy mode" },
-    { "<leader>s", act.Search "CurrentSelectionOrEmptyString", "search mode" },
+    { "<M-c>", act.ActivateCopyMode, "copy mode" },
+    { "<M-f>", act.Search "CurrentSelectionOrEmptyString", "search mode" },
   },
   -- }}}
 

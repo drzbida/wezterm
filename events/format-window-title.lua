@@ -1,13 +1,8 @@
----@module "events.augment-window-title"
----@author sravioli
----@license GNU-GPLv3
-
+local fs = require "utils.fs"
 local wt = require "wezterm"
-local fs = require("utils.fn").fs
-
 local get_process_osc1337 = require("events.user-var-changed").get_process_osc1337
 
-wt.on("format-window-title", function(tab, pane, tabs, _, _)
+wt.on("format-window-title", function(tab, pane, tabs, pane_title, _)
   local zoomed = ""
   if tab.active_pane.is_zoomed then
     zoomed = "[Z] "
@@ -15,19 +10,20 @@ wt.on("format-window-title", function(tab, pane, tabs, _, _)
 
   local index = ""
   if #tabs > 1 then
-    index = ("[%d/%d] "):format(tab.tab_index + 1, #tabs)
+    index = string.format("[%d/%d] ", tab.tab_index + 1, #tabs)
   end
 
-  ---tab title
+  local proc = get_process_osc1337(pane) or pane.foreground_process_name
+
   local title = fs.basename(pane.title):gsub("%.exe%s?$", "")
 
-  local proc = get_process_osc1337() or pane.foreground_process_name
   if proc:find "nvim" then
     proc = proc:sub(proc:find "nvim")
   end
+
   if proc == "nvim" or title == "cmd" then
-    local cwd, _ = fs.basename(pane.current_working_dir.file_path)
-    title = ("Neovim (dir: %s)"):format(cwd)
+    local cwd = fs.basename(pane.current_working_dir.file_path)
+    title = string.format("Neovim (dir: %s)", cwd)
   end
 
   return zoomed .. index .. title

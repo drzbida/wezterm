@@ -54,4 +54,6 @@ Config.ssh_domains = {}
 -- ref: https://wezfurlong.org/wezterm/multiplexing.html#unix-domains
 Config.unix_domains = {}
 
+Config.max_fps = 144
+
 return Config
