@@ -931,6 +931,8 @@ end --~~ }}}
 
 --~~ {{{2 M.str.format_tab_title(pane: wt.Pane, title: string, Config: table, max_width: integer)
 
+local get_process_osc1337 = require("events.user-var-changed").get_process_osc1337
+
 M.str.format_tab_title = function(pane, title, config, max_width)
   title = sgsub(title, "^Copy mode: ", "")
   local process, other = smatch(title, "^(%S+)%s*%-?%s*%s*(.*)$")
@@ -939,7 +941,10 @@ M.str.format_tab_title = function(pane, title, config, max_width)
     title = Icon.Progs[process] .. " " .. (other or "")
   end
 
-  local proc = pane.foreground_process_name or pane:get_foreground_process_name() or ""
+  local proc = get_process_osc1337()
+    or pane.foreground_process_name
+    or pane:get_foreground_process_name()
+    or ""
   if sfind(proc, "nvim") then
     proc = ssub(proc, sfind(proc, "nvim") or 1)
   end

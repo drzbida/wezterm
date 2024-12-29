@@ -111,7 +111,7 @@ local key_tables = {
     { "<C-S-n>", act.SpawnWindow, "new window" },
     { "<C-S-p>", act.ActivateCommandPalette, "command palette" },
     { "<C-S-r>", act.ReloadConfiguration, "reload config" },
-    { "<C-S-t>", act.SpawnTab "CurrentPaneDomain", "new pane" },
+    { "<C-t>", act.SpawnTab "CurrentPaneDomain", "new pane" },
     {
       "<C-S-u>",
       act.CharSelect {
@@ -120,8 +120,8 @@ local key_tables = {
       },
       "char select",
     },
-    { "<C-S-w>", act.CloseCurrentTab { confirm = true }, "close tab" },
-    { "<C-S-z>", act.TogglePaneZoomState, "toggle zoom" },
+    { "<M-q>", act.CloseCurrentTab { confirm = true }, "close tab" },
+    { "<M-z>", act.TogglePaneZoomState, "toggle zoom" },
     { "<PageUp>", act.ScrollByPage(-1), "" },
     { "<PageDown>", act.ScrollByPage(1), "" },
     { "<C-S-Insert>", act.PasteFrom "PrimarySelection", "" },
@@ -129,12 +129,12 @@ local key_tables = {
     { "<C-S-Space>", act.QuickSelect, "quick select" },
 
     ---quick split and nav
-    { '<C-S-">', act.SplitHorizontal { domain = "CurrentPaneDomain" }, "vsplit" },
-    { "<C-S-%>", act.SplitVertical { domain = "CurrentPaneDomain" }, "hsplit" },
-    { "<C-M-h>", act.ActivatePaneDirection "Left", "move left" },
-    { "<C-M-j>", act.ActivatePaneDirection "Down", "mode down" },
-    { "<C-M-k>", act.ActivatePaneDirection "Up", "move up" },
-    { "<C-M-l>", act.ActivatePaneDirection "Right", "move right" },
+    { "<M-s>", act.SplitHorizontal { domain = "CurrentPaneDomain" }, "vsplit" },
+    { "<M-v>", act.SplitVertical { domain = "CurrentPaneDomain" }, "hsplit" },
+    { "<M-h>", act.ActivatePaneDirection "Left", "move left" },
+    { "<M-j>", act.ActivatePaneDirection "Down", "mode down" },
+    { "<M-k>", act.ActivatePaneDirection "Up", "move up" },
+    { "<M-l>", act.ActivatePaneDirection "Right", "move right" },
 
     ---key tables
     { "<leader>h", act.ActivateKeyTable { name = "help_mode", one_shot = true }, "help" },
