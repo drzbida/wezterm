@@ -5,6 +5,8 @@
 local wt = require "wezterm"
 local fs = require("utils.fn").fs
 
+local get_process_osc1337 = require("events.user-var-changed").get_process_osc1337
+
 wt.on("format-window-title", function(tab, pane, tabs, _, _)
   local zoomed = ""
   if tab.active_pane.is_zoomed then
@@ -19,7 +21,7 @@ wt.on("format-window-title", function(tab, pane, tabs, _, _)
   ---tab title
   local title = fs.basename(pane.title):gsub("%.exe%s?$", "")
 
-  local proc = pane.foreground_process_name
+  local proc = get_process_osc1337() or pane.foreground_process_name
   if proc:find "nvim" then
     proc = proc:sub(proc:find "nvim")
   end
