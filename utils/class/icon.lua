@@ -116,6 +116,8 @@ local nf = require("wezterm").nerdfonts
 ---@field Folder       string `󰉋`
 ---@field Workspace    string `󰒘`
 ---@field Hostname     string `󱄄`
+---@field Memory       string `󰍛`
+---@field CPU          string `󰻠`
 ---@field Notification string ``
 
 --~ }}}
@@ -130,6 +132,8 @@ M.Notification = nf.cod_circle_small_filled
 M.Workspace = nf.md_shield
 M.Folder = nf.md_folder
 M.Hostname = nf.md_monitor_shimmer
+M.Memory = nf.md_memory
+M.Cpu = nf.md_cpu_64_bit
 
 M.Sep = {
   block = "█",
