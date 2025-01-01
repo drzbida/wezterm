@@ -11,6 +11,7 @@ local StatusBar = class.layout:new "StatusBar"
 local fs, mt, str, tbl = fn.fs, fn.mt, fn.str, fn.tbl
 
 local sys_cache = { data = nil, last_update = 0 }
+local media_cache = { data = nil, last_update = 0 }
 
 local function get_modes(theme)
   return {
@@ -138,6 +139,37 @@ local function get_system_stats()
   return stats
 end
 
+local function get_media_info()
+  local now = os.time()
+  if now - media_cache.last_update < 5 then
+    return media_cache.data
+  end
+
+  local success, output = wt.run_child_process { "mtlq", "now", "--distinct" }
+  if not success then
+    return nil
+  end
+
+  local data = wt.json_parse(output)
+  if not data or #data == 0 then
+    media_cache.data = nil
+    media_cache.last_update = now
+    return nil
+  end
+
+  local media = nil
+  for _, item in ipairs(data) do
+    if item.source:find "Spotify" then
+      media = item
+      break
+    end
+  end
+
+  media_cache.data = media or data[1]
+  media_cache.last_update = now
+  return media_cache.data
+end
+
 local function calculate_usable_width(window, pane, Config, width)
   for _ = 1, #window:mux_window():tabs() do
     local tab_title = pane:get_title()
@@ -181,9 +213,44 @@ end
 local function create_cpu_cells(stats)
   local cpu_ico = str.padl(icon.Cpu)
   return {
-    stats and string.format("CPU %s%%%s", stats.cpu, cpu_ico) or "N/A",
-    stats and string.format("%s%%%s", stats.cpu, cpu_ico) or "N/A",
+    stats and string.format("CPU %02d%%%s", stats.cpu, cpu_ico) or "N/A",
+    stats and string.format("%02d%%%s", stats.cpu, cpu_ico) or "N/A",
   }
+end
+
+local media_animation_state = 0
+local animation_frames = {
+  "▁▃▅",
+  "▂▄▆",
+  "▃▅▇",
+  "▄▆█",
+  "▅▇█",
+  "▆█▇",
+  "▇█▆",
+  "█▇▅",
+  "▇▆▄",
+  "▆▅▃",
+  "▅▄▂",
+  "▄▃▁",
+}
+
+local function create_media_cells()
+  local media = get_media_info()
+  if media then
+    media_animation_state = (media_animation_state + 1) % #animation_frames
+    local anim = animation_frames[media_animation_state + 1]
+
+    local truncated_title = #media.title > 30 and media.title:sub(1, 27) .. "..."
+      or media.title
+
+    return {
+      string.format("%s %s - %s", anim, media.title, media.artist),
+      string.format("%s %s - %s", anim, truncated_title, media.artist),
+      string.format("%s %s", anim, media.title),
+      string.format("%s %s", anim, truncated_title),
+    }
+  end
+  return nil
 end
 
 local function handle_modal_prompts(mode, modes, window, rsb, theme, width)
@@ -239,6 +306,11 @@ local function create_status_cells(Config, theme, stats, width)
   local battery_cells = create_battery_cells()
   if battery_cells then
     table.insert(sets, battery_cells)
+  end
+
+  local media_cells = create_media_cells()
+  if media_cells then
+    table.insert(sets, 1, media_cells)
   end
 
   local function compute_width(combination, sep_width, pad_width)
@@ -306,14 +378,12 @@ wt.on("update-status", function(window, pane)
     new_button = Config.show_new_tab_button_in_tab_bar and 8 or 0,
   }
 
-  -- Left status bar
   local lsb = StatusBar:new "LeftStatusBar"
   width = create_modal_indicator(window, modes, lsb, bg, width)
   width =
     create_workspace_indicator(window, lsb, theme, bg, window:active_key_table(), width)
   window:set_left_status(lsb:format())
 
-  -- Right status bar
   local rsb = StatusBar:new "RightStatusBar"
   local mode = window:active_key_table()
 
