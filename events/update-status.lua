@@ -234,8 +234,7 @@ local animation_frames = {
   "▄▃▁",
 }
 
-local function create_media_cells()
-  local media = get_media_info()
+local function create_media_cells(media)
   if media then
     media_animation_state = (media_animation_state + 1) % #animation_frames
     local anim = animation_frames[media_animation_state + 1]
@@ -293,7 +292,7 @@ local function handle_modal_prompts(mode, modes, window, rsb, theme, width)
   return false
 end
 
-local function create_status_cells(Config, theme, stats, width)
+local function create_status_cells(Config, theme, stats, media, width)
   local fg = wt.color.parse(theme.ansi[5])
   local palette = { fg:darken(0.15), fg, fg:lighten(0.15), fg:lighten(0.25) }
 
@@ -308,7 +307,7 @@ local function create_status_cells(Config, theme, stats, width)
     table.insert(sets, battery_cells)
   end
 
-  local media_cells = create_media_cells()
+  local media_cells = create_media_cells(media)
   if media_cells then
     table.insert(sets, 1, media_cells)
   end
@@ -400,7 +399,8 @@ wt.on("update-status", function(window, pane)
   end
 
   local stats = get_system_stats()
-  local status_data = create_status_cells(Config, theme, stats, width)
+  local media = get_media_info()
+  local status_data = create_status_cells(Config, theme, stats, media, width)
 
   render_status_bar(rsb, status_data, theme)
   window:set_right_status(rsb:format())
